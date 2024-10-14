@@ -1,26 +1,77 @@
-    int i, w;
-    int K[n + 1][W + 1];
+#include <iostream>
+using namespace std;
 
-    for (int i = 0; i <= n; i++)
+struct obj
+{
+    double profit;
+    double weight;
+    double ratio;
+};
+
+void input(obj arr[], int n)
+{
+    for (int i = 0; i < n; i++)
     {
-        for (int w = 0; w <= W; w++)
+        cout << "\nEnter weight: ";
+        cin >> arr[i].weight;
+        cout << "Enter profit: ";
+        cin >> arr[i].profit;
+        arr[i].ratio = arr[i].profit / arr[i].weight;
+    }
+}
+
+void sort(obj arr[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n - i - 1; j++)
         {
-            if (i == 0 || w == 0)
-                K[i][w] = 0;
-            else if (wt[i - 1] <= w)
-                K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]);
-            else
-                K[i][w] = K[i - 1][w];
+            if (arr[j].ratio < arr[j + 1].ratio)
+            {
+                swap(arr[j], arr[j + 1]);
+            }
         }
     }
+}
 
-    for (int i = 0; i <= n; i++)
+void output(obj arr[], int n, int w)
+{
+    double totalProfit = 0;
+    sort(arr, n);
+    cout << "weight\tprofit\tratio";
+    for (int i = 0; i < n; i++)
     {
-        cout << "\n";
-        for (w = 0; w <= W; w++)
+        cout << "\n"
+             << arr[i].weight << "\t" << arr[i].profit << "\t" << arr[i].ratio;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        if (w <= 0)
+            break;
+        if (arr[i].weight <= w)
         {
-            cout << " " << K[i][w] << " ";
+            totalProfit += arr[i].profit;
+            w -= arr[i].weight;
+        }
+        else
+        {
+            totalProfit += arr[i].profit * (static_cast<double>(w) / arr[i].weight);
+            w = 0;
         }
     }
-    cout << "\n";
-    return K[n][W];
+    cout << "\ntotal profit: " << totalProfit;
+}
+
+int main()
+{
+    int n, w;
+    cout << "\nEnter number of objects: ";
+    cin >> n;
+    cout << "Enter total bag weight: ";
+    cin >> w;
+    obj arr[n];
+    input(arr, n);
+    output(arr, n, w);
+    return 0;
+}
