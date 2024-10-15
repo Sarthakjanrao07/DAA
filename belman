@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+#include <iostream>
+using namespace std;
+
+struct Edge {
+    int src;
+    int dest;
+    int wgt;
+};
+
+struct Graph {
+    int V, E;
+    struct Edge* edge;
+};
+
+struct Graph* gengraph(int V, int E) {
+    struct Graph* graph = new Graph;
+    graph->V = V;
+    graph->E = E;
+    graph->edge = new Edge[E];
+    return graph;
+}
+
+void printarr(int dist[], int n) {
+    cout << "Vertex Distance from Source\n";
+    for (int i = 0; i < n; i++) {
+        cout << i << "\t\t" << dist[i] << "\n";
+    }
+}
+
+void belman(struct Graph* graph, int src) {
+    int v = graph->V;
+    int E = graph->E;
+    int dist[v];
+
+    // Initialize distances from src to all other vertices as infinite
+    for (int i = 0; i < v; i++) {
+        dist[i] = 999; // Use a large value to represent infinity
+    }
+    dist[src] = 0; // Distance to the source is 0
+
+    // Relax edges V-1 times
+    for (int i = 0; i < v - 1; i++) {
+        for (int j = 0; j < E; j++) {
+            int u = graph->edge[j].src;
+            int v = graph->edge[j].dest;
+            int wgt = graph->edge[j].wgt;
+            if (dist[u] != 999 && dist[u] + wgt < dist[v]) {
+                dist[v] = dist[u] + wgt;
+            }
+        }
+    }
+
+    // Check for negative-weight cycles
+    for (int j = 0; j < E; j++) {
+        int u = graph->edge[j].src;
+        int v = graph->edge[j].dest;
+        int wgt = graph->edge[j].wgt;
+        if (dist[u] != 999 && dist[u] + wgt < dist[v]) {
+            cout << "Cycle found\n";
+            return;
+        }
+    }
+    printarr(dist, v);
+}
+
+int main() {
+    int V, E;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
+    cout << "Enter the number of edges: ";
+    cin >> E;
+
+    struct Graph* graph = gengraph(V, E);
+    for (int i = 0; i < E; i++) {
+        cout << "Enter the edge " << i + 1 << " (src dest wgt): ";
+        cin >> graph->edge[i].src >> graph->edge[i].dest >> graph->edge[i].wgt;
+    }
+
+    belman(graph, 0);
+    return 0;
+}
