@@ -1,82 +1,87 @@
-#include <bits/stdc++.h>
 #include <iostream>
 using namespace std;
 
-struct Edge {
-    int src;
-    int dest;
-    int wgt;
-};
+void input(int weight[], int profit[], int n)
+{
 
-struct Graph {
-    int V, E;
-    struct Edge* edge;
-};
-
-struct Graph* gengraph(int V, int E) {
-    struct Graph* graph = new Graph;
-    graph->V = V;
-    graph->E = E;
-    graph->edge = new Edge[E];
-    return graph;
-}
-
-void printarr(int dist[], int n) {
-    cout << "Vertex Distance from Source\n";
-    for (int i = 0; i < n; i++) {
-        cout << i << "\t\t" << dist[i] << "\n";
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Enter the Element in weight: " << endl;
+        cin >> weight[i];
+    }
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Enter the Element in profit: " << endl;
+        cin >> profit[i];
     }
 }
 
-void belman(struct Graph* graph, int src) {
-    int v = graph->V;
-    int E = graph->E;
-    int dist[v];
-
-    // Initialize distances from src to all other vertices as infinite
-    for (int i = 0; i < v; i++) {
-        dist[i] = 999; // Use a large value to represent infinity
+void output(int weight[], int profit[], int n)
+{
+    cout << "\nWeight\tProfit" << endl;
+    for (int i = 0; i < n; i++)
+    {
+        cout << weight[i] << "\t" << profit[i] << endl;
     }
-    dist[src] = 0; // Distance to the source is 0
+}
 
-    // Relax edges V-1 times
-    for (int i = 0; i < v - 1; i++) {
-        for (int j = 0; j < E; j++) {
-            int u = graph->edge[j].src;
-            int v = graph->edge[j].dest;
-            int wgt = graph->edge[j].wgt;
-            if (dist[u] != 999 && dist[u] + wgt < dist[v]) {
-                dist[v] = dist[u] + wgt;
-            }
+int max(int a, int b)
+{
+    if (a > b)
+    {
+        return a;
+    }
+    else
+    {
+        return b;
+    }
+}
+
+int knapS(int W, int wt[], int val[], int n)
+{
+    int i, w;
+    int K[n + 1][W + 1];
+
+    for (int i = 0; i <= n; i++)
+    {
+        for (int w = 0; w <= W; w++)
+        {
+            if (i == 0 || w == 0)
+                K[i][w] = 0;
+            else if (wt[i - 1] <= w)
+                K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]);
+            else
+                K[i][w] = K[i - 1][w];
         }
     }
 
-    // Check for negative-weight cycles
-    for (int j = 0; j < E; j++) {
-        int u = graph->edge[j].src;
-        int v = graph->edge[j].dest;
-        int wgt = graph->edge[j].wgt;
-        if (dist[u] != 999 && dist[u] + wgt < dist[v]) {
-            cout << "Cycle found\n";
-            return;
+    for (int i = 0; i <= n; i++)
+    {
+        cout << "\n";
+        for (w = 0; w <= W; w++)
+        {
+            cout << " " << K[i][w] << " ";
         }
     }
-    printarr(dist, v);
+    cout << "\n";
+    return K[n][W];
 }
 
-int main() {
-    int V, E;
-    cout << "Enter the number of vertices: ";
-    cin >> V;
-    cout << "Enter the number of edges: ";
-    cin >> E;
+int main()
+{
 
-    struct Graph* graph = gengraph(V, E);
-    for (int i = 0; i < E; i++) {
-        cout << "Enter the edge " << i + 1 << " (src dest wgt): ";
-        cin >> graph->edge[i].src >> graph->edge[i].dest >> graph->edge[i].wgt;
-    }
+    int W;
+    cout << "\nEnter the max Capacity of knaopsack: " << endl;
+    cin >> W;
 
-    belman(graph, 0);
+    int weight[4];
+    int profit[4];
+
+    input(weight, profit, 4);
+    output(weight, profit, 4);
+
+    int TP = knapS(W, weight, profit, 4);
+    cout << "\nTotal Profit=> " << TP;
+
     return 0;
 }
